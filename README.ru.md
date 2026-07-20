@@ -33,7 +33,13 @@
 
 ## Установка
 
-В Linux с systemd установите прокси как прозрачную замену стандартного порта Ollama одной командой:
+В Linux с systemd установите прокси прямо из GitHub как прозрачную замену стандартного порта Ollama одной командой:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+```
+
+Если репозиторий уже скачан, можно выполнить локальный вариант:
 
 ```bash
 sudo ./scripts/install.sh
@@ -41,7 +47,13 @@ sudo ./scripts/install.sh
 
 Установщик переносит backend Ollama на `127.0.0.1:11435`, ставит очередь на стандартный `127.0.0.1:11434` и перезапускает оба сервиса. Он создаёт только обратимый drop-in в `ollama.service.d`.
 
-Удалите прокси и верните Ollama на стандартный порт одной командой:
+Удалите прокси с любой машины и верните Ollama на стандартный порт одной командой:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+```
+
+Если репозиторий уже скачан:
 
 ```bash
 sudo ./scripts/uninstall.sh

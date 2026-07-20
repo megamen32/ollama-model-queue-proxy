@@ -41,7 +41,13 @@ Requests wait in the queue. They are not cancelled just because another model is
 
 ### Install
 
-On Linux with systemd, install it as a transparent replacement for Ollama's standard port with one command:
+On Linux with systemd, install it from GitHub as a transparent replacement for Ollama's standard port with one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+```
+
+If the repository is already checked out, the equivalent local command is:
 
 ```bash
 sudo ./scripts/install.sh
@@ -49,7 +55,13 @@ sudo ./scripts/install.sh
 
 The installer moves the Ollama backend to `127.0.0.1:11435`, puts the queue proxy on the standard `127.0.0.1:11434`, and restarts both services. It creates only a reversible `ollama.service.d` drop-in.
 
-Remove the proxy and return Ollama to the standard port with one command:
+Remove the proxy from any machine and return Ollama to the standard port with one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+```
+
+If the repository is already checked out:
 
 ```bash
 sudo ./scripts/uninstall.sh

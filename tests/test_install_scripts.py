@@ -61,6 +61,24 @@ class InstallScriptIntegrationTests(unittest.TestCase):
             text=True,
         )
 
+    def _run_piped(self, script: Path) -> subprocess.CompletedProcess[str]:
+        environment = self._environment()
+        environment.update(
+            {
+                "CHANGE_PORT": "TRUE",
+                "OLLAMA_QUEUE_RAW_BASE": f"file://{REPO_DIR}",
+            }
+        )
+        return subprocess.run(
+            ["bash", "-s"],
+            cwd=REPO_DIR,
+            env=environment,
+            input=script.read_text(encoding="utf-8"),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
     def test_install_then_uninstall_restores_standard_port(self) -> None:
         install_result = self._run(INSTALL_SCRIPT)
 
@@ -83,6 +101,17 @@ class InstallScriptIntegrationTests(unittest.TestCase):
         commands = self.log_path.read_text(encoding="utf-8").splitlines()
         self.assertIn("restart ollama.service", commands)
         self.assertIn("enable --now ollama-model-queue-proxy.service", commands)
+
+    def test_piped_install_and_uninstall_bootstrap_from_raw_base(self) -> None:
+        install_result = self._run_piped(INSTALL_SCRIPT)
+        self.assertIn("Queue proxy:    127.0.0.1:11434", install_result.stdout)
+        self.assertTrue((self.systemd_dir / "ollama-model-queue-proxy.service").is_file())
+        self.assertTrue((self.libexec_dir / "ollama_model_queue_proxy.py").is_file())
+
+        uninstall_result = self._run_piped(UNINSTALL_SCRIPT)
+        self.assertIn("Removed ollama-model-queue-proxy.service.", uninstall_result.stdout)
+        self.assertFalse((self.systemd_dir / "ollama-model-queue-proxy.service").exists())
+        self.assertFalse((self.libexec_dir / "ollama_model_queue_proxy.py").exists())
 
 
 if __name__ == "__main__":

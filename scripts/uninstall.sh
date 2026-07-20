@@ -2,8 +2,36 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=queue-proxy-common.sh
-source "$SCRIPT_DIR/queue-proxy-common.sh"
+RAW_BASE="${OLLAMA_QUEUE_RAW_BASE:-https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main}"
+BOOTSTRAP_DIR=""
+
+cleanup_bootstrap() {
+    if [ -n "$BOOTSTRAP_DIR" ]; then
+        rm -rf "$BOOTSTRAP_DIR"
+    fi
+}
+
+trap cleanup_bootstrap EXIT
+
+if [ -f "$SCRIPT_DIR/queue-proxy-common.sh" ]; then
+    # shellcheck source=queue-proxy-common.sh
+    source "$SCRIPT_DIR/queue-proxy-common.sh"
+else
+    [ "$(id -u)" -eq 0 ] || {
+        printf '%s\n' 'error: run the piped uninstaller with sudo' >&2
+        exit 1
+    }
+    command -v curl >/dev/null 2>&1 || {
+        printf '%s\n' 'error: curl is required for remote removal' >&2
+        exit 1
+    }
+    BOOTSTRAP_DIR="$(mktemp -d)"
+    mkdir -p "$BOOTSTRAP_DIR/scripts"
+    curl -fsSL --retry 3 "$RAW_BASE/scripts/queue-proxy-common.sh" \
+        -o "$BOOTSTRAP_DIR/scripts/queue-proxy-common.sh"
+    # shellcheck source=queue-proxy-common.sh
+    source "$BOOTSTRAP_DIR/scripts/queue-proxy-common.sh"
+fi
 
 require_root
 require_systemctl

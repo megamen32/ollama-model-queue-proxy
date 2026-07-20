@@ -33,7 +33,13 @@
 
 ## 安装
 
-在使用 systemd 的 Linux 上，用一条命令把队列代理安装为 Ollama 标准端口的透明替代：
+在使用 systemd 的 Linux 上，可以直接从 GitHub 用一条命令把队列代理安装为 Ollama 标准端口的透明替代：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+```
+
+如果已经下载了仓库，也可以执行本地命令：
 
 ```bash
 sudo ./scripts/install.sh
@@ -41,7 +47,13 @@ sudo ./scripts/install.sh
 
 安装脚本会把 Ollama backend 移到 `127.0.0.1:11435`，让队列代理监听标准的 `127.0.0.1:11434`，然后重启两个服务。它只创建可逆的 `ollama.service.d` drop-in。
 
-用一条命令删除代理并把 Ollama 恢复到标准端口：
+可以从任何机器用一条命令删除代理并把 Ollama 恢复到标准端口：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+```
+
+如果已经下载了仓库：
 
 ```bash
 sudo ./scripts/uninstall.sh
