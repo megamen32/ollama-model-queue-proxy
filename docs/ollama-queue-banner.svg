@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">Ollama model-affine queue</title>
+  <desc id="desc">Requests are grouped by the model currently loaded in Ollama, then the queue switches to the next model.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#09111f"/>
+      <stop offset="0.55" stop-color="#101c35"/>
+      <stop offset="1" stop-color="#18254a"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6ee7f9"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c4b5fd"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bbf7d0"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="520" rx="32" fill="url(#background)"/>
+  <rect width="1600" height="520" rx="32" fill="url(#grid)"/>
+  <circle cx="1380" cy="-20" r="250" fill="#7c3aed" opacity=".18" filter="url(#glow)"/>
+  <circle cx="180" cy="540" r="230" fill="#06b6d4" opacity=".12" filter="url(#glow)"/>
+
+  <text x="82" y="112" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="56" font-weight="750">OLLAMA MODEL-AFFINE QUEUE</text>
+  <text x="86" y="158" fill="#9fb2d0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24">Keep one model hot, drain its work, then switch deliberately.</text>
+
+  <g transform="translate(86 245)">
+    <rect width="260" height="132" rx="22" fill="#13233b" stroke="#3b82f6" stroke-opacity=".45"/>
+    <circle cx="54" cy="54" r="24" fill="url(#cyan)"/>
+    <path d="M43 55h22M54 44v22" stroke="#092039" stroke-width="5" stroke-linecap="round"/>
+    <text x="96" y="55" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">CLIENTS</text>
+    <text x="96" y="88" fill="#8ea4c5" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">wait, do not cancel</text>
+  </g>
+  <path d="M366 311h104" stroke="url(#cyan)" stroke-width="5" stroke-linecap="round"/>
+  <path d="m454 294 25 17-25 17" fill="none" stroke="url(#cyan)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g transform="translate(500 215)">
+    <rect width="425" height="192" rx="28" fill="#172a4c" stroke="#60a5fa" stroke-opacity=".72" stroke-width="2"/>
+    <rect x="26" y="26" width="373" height="52" rx="16" fill="#0d1a31"/>
+    <circle cx="55" cy="52" r="8" fill="#34d399"/>
+    <circle cx="82" cy="52" r="8" fill="#fbbf24"/>
+    <circle cx="109" cy="52" r="8" fill="#fb7185"/>
+    <text x="137" y="60" fill="#dbeafe" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" font-weight="650">MODEL QUEUE  ·  11437</text>
+    <rect x="28" y="101" width="158" height="55" rx="16" fill="url(#cyan)" opacity=".95"/>
+    <text x="48" y="136" fill="#06233b" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" font-weight="750">qwen3:4b</text>
+    <rect x="202" y="101" width="90" height="55" rx="16" fill="#28466f"/>
+    <text x="225" y="136" fill="#dbeafe" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" font-weight="700">+ 12</text>
+    <rect x="308" y="101" width="90" height="55" rx="16" fill="#21395f"/>
+    <text x="327" y="136" fill="#a9bee0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18" font-weight="700">FIFO</text>
+  </g>
+  <path d="M952 311h104" stroke="url(#violet)" stroke-width="5" stroke-linecap="round"/>
+  <path d="m1040 294 25 17-25 17" fill="none" stroke="url(#violet)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g transform="translate(1090 245)">
+    <rect width="420" height="132" rx="22" fill="#182c42" stroke="#34d399" stroke-opacity=".58"/>
+    <rect x="28" y="34" width="62" height="62" rx="16" fill="url(#green)"/>
+    <path d="M47 57c8-16 27-16 35 0M47 72c8 16 27 16 35 0" fill="none" stroke="#06352a" stroke-width="5" stroke-linecap="round"/>
+    <text x="112" y="58" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">OLLAMA</text>
+    <text x="112" y="89" fill="#9ac9b8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">one loaded model</text>
+  </g>
+
+  <text x="86" y="465" fill="#7890b5" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">model affinity  •  serialized inference  •  bounded queue  •  standard library only</text>
+</svg>

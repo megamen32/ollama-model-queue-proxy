@@ -1,0 +1,23 @@
+[Unit]
+Description=Model-affine queue proxy for Ollama
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env python3 /usr/local/libexec/ollama_model_queue_proxy.py
+Restart=always
+RestartSec=3
+Environment=OLLAMA_QUEUE_LISTEN_HOST=127.0.0.1
+Environment=OLLAMA_QUEUE_LISTEN_PORT=11437
+Environment=OLLAMA_UPSTREAM_URL=http://127.0.0.1:11434
+Environment=OLLAMA_MODEL_QUEUE_MAX=128
+Environment=OLLAMA_QUEUE_BATCH_GRACE_S=0.25
+Environment=OLLAMA_PROXY_FIRST_BYTE_TIMEOUT_S=180
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target
