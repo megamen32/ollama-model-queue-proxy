@@ -37,42 +37,35 @@ Requests wait in the queue. They are not cancelled just because another model is
 - model-affine batching with a small configurable grace period;
 - `/health` endpoint with active model and queue depth;
 - structured queue logs: `queue_enqueue`, `queue_start`, `queue_switch`, `queue_done`;
-- no changes required in Ollama itself.
+- reversible systemd drop-in for Ollama; no changes to Ollama data or binaries.
 
 ### Install
 
-The proxy listens on `127.0.0.1:11437` and forwards to Ollama on `127.0.0.1:11434` by default.
+On Linux with systemd, install it as a transparent replacement for Ollama's standard port with one command:
 
 ```bash
-sudo install -D -m 0755 ollama_model_queue_proxy.py \
-  /usr/local/libexec/ollama_model_queue_proxy.py
-sudo install -D -m 0644 systemd/ollama-model-queue-proxy.service \
-  /etc/systemd/system/ollama-model-queue-proxy.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now ollama-model-queue-proxy.service
+sudo ./scripts/install.sh
 ```
 
-For a single loaded model, keep Ollama aligned with the proxy:
+The installer moves the Ollama backend to `127.0.0.1:11435`, puts the queue proxy on the standard `127.0.0.1:11434`, and restarts both services. It creates only a reversible `ollama.service.d` drop-in.
 
-```ini
-# /etc/systemd/system/ollama.service.d/90-queue-runtime.conf
-[Service]
-Environment="OLLAMA_NUM_PARALLEL=1"
-Environment="OLLAMA_MAX_LOADED_MODELS=1"
-Environment="OLLAMA_MAX_QUEUE=64"
+Remove the proxy and return Ollama to the standard port with one command:
+
+```bash
+sudo ./scripts/uninstall.sh
 ```
 
-Then run `sudo systemctl daemon-reload && sudo systemctl restart ollama`.
+The uninstall command removes the proxy unit and its drop-in, then restarts Ollama on `127.0.0.1:11434`.
 
-Point LiteLLM or another OpenAI-compatible client at the proxy path instead of the direct Ollama port. For LiteLLM's Ollama provider, use `http://127.0.0.1:11437` as the `api_base`.
+Point LiteLLM or another OpenAI-compatible client at `http://127.0.0.1:11434`. For LiteLLM's Ollama provider, use that URL as the `api_base`.
 
 ### Configuration
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `OLLAMA_QUEUE_LISTEN_HOST` | `127.0.0.1` | Proxy bind address |
-| `OLLAMA_QUEUE_LISTEN_PORT` | `11437` | Proxy port |
-| `OLLAMA_UPSTREAM_URL` | `http://127.0.0.1:11434` | Ollama URL |
+| `OLLAMA_QUEUE_LISTEN_PORT` | `11434` | Proxy port |
+| `OLLAMA_UPSTREAM_URL` | `http://127.0.0.1:11435` | Ollama URL |
 | `OLLAMA_MODEL_QUEUE_MAX` | `128` | Maximum pending requests |
 | `OLLAMA_QUEUE_BATCH_GRACE_S` | `0.25` | Wait for same-model arrivals before switching |
 | `OLLAMA_PROXY_FIRST_BYTE_TIMEOUT_S` | `180` | Upstream first-byte timeout |
@@ -84,10 +77,10 @@ The scheduler is intentionally model-affine rather than globally fair. A busy mo
 ### Verify
 
 ```bash
-curl -fsS http://127.0.0.1:11437/health
-curl -fsS http://127.0.0.1:11437/api/tags
+curl -fsS http://127.0.0.1:11434/health
+curl -fsS http://127.0.0.1:11434/api/tags
 
-curl -fsS http://127.0.0.1:11437/api/generate \
+curl -fsS http://127.0.0.1:11434/api/generate \
   -H 'Content-Type: application/json' \
   -d '{"model":"qwen3:4b-instruct","prompt":"queue smoke","stream":false,"options":{"num_predict":2}}'
 ```

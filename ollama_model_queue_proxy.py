@@ -22,8 +22,8 @@ from urllib.parse import urlsplit
 
 LOGGER = logging.getLogger("ollama-model-queue")
 LISTEN_HOST = os.getenv("OLLAMA_QUEUE_LISTEN_HOST", "127.0.0.1")
-LISTEN_PORT = int(os.getenv("OLLAMA_QUEUE_LISTEN_PORT", "11437"))
-UPSTREAM_URL = os.getenv("OLLAMA_UPSTREAM_URL", "http://127.0.0.1:11434")
+LISTEN_PORT = int(os.getenv("OLLAMA_QUEUE_LISTEN_PORT", "11434"))
+UPSTREAM_URL = os.getenv("OLLAMA_UPSTREAM_URL", "http://127.0.0.1:11435")
 MAX_QUEUE = int(os.getenv("OLLAMA_MODEL_QUEUE_MAX", "128"))
 BATCH_GRACE_S = float(os.getenv("OLLAMA_QUEUE_BATCH_GRACE_S", "0.25"))
 FIRST_BYTE_TIMEOUT_S = float(os.getenv("OLLAMA_PROXY_FIRST_BYTE_TIMEOUT_S", "180"))
