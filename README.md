@@ -37,37 +37,53 @@ Requests wait in the queue. They are not cancelled just because another model is
 - model-affine batching with a small configurable grace period;
 - `/health` endpoint with active model and queue depth;
 - structured queue logs: `queue_enqueue`, `queue_start`, `queue_switch`, `queue_done`;
-- reversible systemd drop-in for Ollama; no changes to Ollama data or binaries.
+- reversible platform-native service configuration for Ollama; no changes to Ollama data or binaries.
 
 ### Install
 
-On Linux with systemd, install it from GitHub as a transparent replacement for Ollama's standard port with one command:
+The installer is Python standard-library code, not a shell installer. It detects Ubuntu/Linux, macOS, and Windows and installs the native process supervisor for that platform.
+
+Ubuntu/Linux with systemd:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | sudo env CHANGE_PORT=TRUE python3 -
 ```
 
-If the repository is already checked out, the equivalent local command is:
+macOS with the Ollama desktop app:
 
 ```bash
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | env CHANGE_PORT=TRUE python3 -
 ```
 
-The installer moves the Ollama backend to `127.0.0.1:11435`, puts the queue proxy on the standard `127.0.0.1:11434`, and restarts both services. It creates only a reversible `ollama.service.d` drop-in.
+Windows PowerShell:
 
-Remove the proxy from any machine and return Ollama to the standard port with one command:
+```powershell
+py -c "import os,urllib.request; os.environ['CHANGE_PORT']='TRUE'; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py').read())"
+```
+
+The installer moves the Ollama backend to `127.0.0.1:11435`, puts the queue proxy on the standard `127.0.0.1:11434`, and starts it through systemd, launchd, or Task Scheduler. `CHANGE_PORT=FALSE` keeps Ollama on `11434` and installs the proxy on `11437` instead.
+
+Remove it and return Ollama to its previous port with one command.
+
+Ubuntu/Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | sudo python3 -
 ```
 
-If the repository is already checked out:
+macOS:
 
 ```bash
-sudo ./scripts/uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | python3 -
 ```
 
-The uninstall command removes the proxy unit and its drop-in, then restarts Ollama on `127.0.0.1:11434`.
+Windows PowerShell:
+
+```powershell
+py -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py').read())"
+```
+
+If the repository is already checked out, run `sudo python3 scripts/install.py` / `sudo python3 scripts/uninstall.py` on Linux, or the same commands without `sudo` on macOS and Windows.
 
 Point LiteLLM or another OpenAI-compatible client at `http://127.0.0.1:11434`. For LiteLLM's Ollama provider, use that URL as the `api_base`.
 

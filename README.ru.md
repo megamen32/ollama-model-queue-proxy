@@ -29,37 +29,53 @@
 - модельная привязка с настраиваемым временем группировки;
 - `/health` с активной моделью и глубиной очереди;
 - логи `queue_enqueue`, `queue_start`, `queue_switch`, `queue_done`;
-- обратимый systemd drop-in для Ollama; данные и бинарники Ollama не изменяются.
+- обратимая нативная настройка сервиса Ollama; данные и бинарники Ollama не изменяются.
 
 ## Установка
 
-В Linux с systemd установите прокси прямо из GitHub как прозрачную замену стандартного порта Ollama одной командой:
+Установщик написан на Python со стандартной библиотекой, а не на shell. Он определяет Ubuntu/Linux, macOS и Windows и использует нативный supervisor каждой системы.
+
+Ubuntu/Linux с systemd:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | sudo env CHANGE_PORT=TRUE python3 -
 ```
 
-Если репозиторий уже скачан, можно выполнить локальный вариант:
+macOS с десктопным Ollama:
 
 ```bash
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | env CHANGE_PORT=TRUE python3 -
 ```
 
-Установщик переносит backend Ollama на `127.0.0.1:11435`, ставит очередь на стандартный `127.0.0.1:11434` и перезапускает оба сервиса. Он создаёт только обратимый drop-in в `ollama.service.d`.
+Windows PowerShell:
 
-Удалите прокси с любой машины и верните Ollama на стандартный порт одной командой:
+```powershell
+py -c "import os,urllib.request; os.environ['CHANGE_PORT']='TRUE'; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py').read())"
+```
+
+Установщик переносит backend Ollama на `127.0.0.1:11435`, ставит очередь на стандартный `127.0.0.1:11434` и запускает её через systemd, launchd или Task Scheduler. `CHANGE_PORT=FALSE` оставляет Ollama на `11434`, а прокси ставит на `11437`.
+
+Удаление и возврат Ollama на предыдущий порт:
+
+Ubuntu/Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | sudo python3 -
 ```
 
-Если репозиторий уже скачан:
+macOS:
 
 ```bash
-sudo ./scripts/uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | python3 -
 ```
 
-Команда удаления удаляет unit прокси и его drop-in, затем перезапускает Ollama на `127.0.0.1:11434`.
+Windows PowerShell:
+
+```powershell
+py -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py').read())"
+```
+
+Если репозиторий уже скачан, запускайте `sudo python3 scripts/install.py` / `sudo python3 scripts/uninstall.py` на Linux, а на macOS и Windows — без `sudo`.
 
 LiteLLM и другие клиенты должны использовать `http://127.0.0.1:11434`. Для провайдера Ollama в LiteLLM укажите этот адрес в качестве `api_base`.
 

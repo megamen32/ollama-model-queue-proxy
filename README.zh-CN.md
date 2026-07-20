@@ -29,37 +29,53 @@
 - 可配置的按模型批处理等待时间；
 - `/health` 提供当前模型和队列深度；
 - 输出 `queue_enqueue`、`queue_start`、`queue_switch`、`queue_done` 日志；
-- 使用可逆的 Ollama systemd drop-in；不会修改 Ollama 数据或二进制文件。
+- 使用可逆的系统原生 Ollama 服务配置；不会修改 Ollama 数据或二进制文件。
 
 ## 安装
 
-在使用 systemd 的 Linux 上，可以直接从 GitHub 用一条命令把队列代理安装为 Ollama 标准端口的透明替代：
+安装器使用 Python 标准库，而不是 shell。它会检测 Ubuntu/Linux、macOS 和 Windows，并使用对应系统的原生 supervisor。
+
+Ubuntu/Linux 和 systemd：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.sh | sudo env CHANGE_PORT=TRUE bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | sudo env CHANGE_PORT=TRUE python3 -
 ```
 
-如果已经下载了仓库，也可以执行本地命令：
+带 Ollama 桌面应用的 macOS：
 
 ```bash
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py | env CHANGE_PORT=TRUE python3 -
 ```
 
-安装脚本会把 Ollama backend 移到 `127.0.0.1:11435`，让队列代理监听标准的 `127.0.0.1:11434`，然后重启两个服务。它只创建可逆的 `ollama.service.d` drop-in。
+Windows PowerShell：
 
-可以从任何机器用一条命令删除代理并把 Ollama 恢复到标准端口：
+```powershell
+py -c "import os,urllib.request; os.environ['CHANGE_PORT']='TRUE'; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/install.py').read())"
+```
+
+安装器会把 Ollama backend 移到 `127.0.0.1:11435`，让队列代理监听标准的 `127.0.0.1:11434`，并通过 systemd、launchd 或 Task Scheduler 启动。`CHANGE_PORT=FALSE` 会让 Ollama 保持在 `11434`，并把代理安装在 `11437`。
+
+删除并恢复 Ollama 的原端口：
+
+Ubuntu/Linux：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | sudo python3 -
 ```
 
-如果已经下载了仓库：
+macOS：
 
 ```bash
-sudo ./scripts/uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py | python3 -
 ```
 
-删除命令会移除代理 unit 和 drop-in，然后让 Ollama 在 `127.0.0.1:11434` 上重新启动。
+Windows PowerShell：
+
+```powershell
+py -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/megamen32/ollama-model-queue-proxy/main/scripts/uninstall.py').read())"
+```
+
+如果已经下载了仓库，Linux 使用 `sudo python3 scripts/install.py` / `sudo python3 scripts/uninstall.py`，macOS 和 Windows 不需要 `sudo`。
 
 LiteLLM 或其他客户端应使用 `http://127.0.0.1:11434`。LiteLLM 的 Ollama provider 请把这个地址设置为 `api_base`。
 
