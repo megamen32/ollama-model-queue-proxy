@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="docs/ollama-queue-banner.svg" alt="Ollama model-affine queue" width="100%">
+ <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/5366083b-b6b0-40a8-abdc-c601dce309e9" />
+
 </p>
 
 <h1 align="center">Ollama Model-Affine Queue</h1>
