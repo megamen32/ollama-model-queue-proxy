@@ -4,6 +4,15 @@
 
 <h1 align="center">Ollama Model-Affine Queue</h1>
 
+<p align="center"><strong>One GPU. Multiple models. Less time spent reloading.</strong></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-standard%20library-3776AB?style=flat-square" alt="Python standard library">
+  <img src="https://img.shields.io/badge/License-MIT-64748B?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Linux%20%7C%20macOS%20%7C%20Windows-supported-0F766E?style=flat-square" alt="Linux, macOS and Windows">
+</p>
+
+
 <p align="center">
   <a href="#english">English</a> ·
   <a href="README.ru.md">Русский</a> ·
@@ -38,6 +47,25 @@ Requests wait in the queue. They are not cancelled just because another model is
 - `/health` endpoint with active model and queue depth;
 - structured queue logs: `queue_enqueue`, `queue_start`, `queue_switch`, `queue_done`;
 - reversible platform-native service configuration for Ollama; no changes to Ollama data or binaries.
+
+### Works with Ollama Request Watchdog
+
+**Model Queue** decides *when* to send a request to Ollama, keeping work for the same model together. **[Ollama Request Watchdog](https://github.com/megamen32/ollama-request-watchdog-proxy)** limits oversized generation contexts and can restart an unavailable Ollama service. Both projects work on their own; **LiteLLM is optional**.
+
+```text
+Any client (optional: LiteLLM)
+             |
+             v
+Model Queue  :11437  | model-aware scheduling
+             |
+             v
+Watchdog     :11436  | context limits + recovery
+             |
+             v
+Ollama       :11434  | inference
+```
+
+See the **[two-proxy Linux/systemd guide](docs/with-watchdog.md)** for installation, wiring and verification. Both tools may listen on port `11437` by default: move the watchdog to `11436` and direct the queue to that upstream to avoid a port conflict.
 
 ### Install
 
