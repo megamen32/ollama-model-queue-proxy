@@ -4,6 +4,15 @@
 
 <h1 align="center">Ollama 按模型调度的队列</h1>
 
+<p align="center"><strong>一张 GPU，多种模型、减少重复加载。</strong></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-standard%20library-3776AB?style=flat-square" alt="Python standard library">
+  <img src="https://img.shields.io/badge/License-MIT-64748B?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Linux%20%7C%20macOS%20%7C%20Windows-supported-0F766E?style=flat-square" alt="Linux, macOS and Windows">
+</p>
+
+
 <p align="center">
   <a href="README.md">English</a> ·
   <a href="README.ru.md">Русский</a> ·
@@ -26,10 +35,30 @@
 - 仅使用 Python 标准库；
 - 支持原生 Ollama 和 OpenAI-compatible 推理路径；
 - 单个 upstream worker，配合 Ollama 设置可以保持一次只加载一个模型；
+- 原生 Ollama 的 `/api/embed` 和旧的 `/api/embeddings` 都经过同一队列；
 - 可配置的按模型批处理等待时间；
 - `/health` 提供当前模型和队列深度；
 - 输出 `queue_enqueue`、`queue_start`、`queue_switch`、`queue_done` 日志；
 - 使用可逆的系统原生 Ollama 服务配置；不会修改 Ollama 数据或二进制文件。
+
+## 与 Ollama Request Watchdog 协作
+
+**Model Queue** 负责按模型调度请求。**[Ollama Request Watchdog](https://github.com/megamen32/ollama-request-watchdog-proxy)** 负责限制过大的生成上下文，并在 Ollama 无法访问时尝试恢复。两个项目都可以独立运行，**不依赖 LiteLLM**。
+
+```text
+应用程序（可选 LiteLLM）
+          |
+          v
+Model Queue  :11437  按模型排队
+          |
+          v
+Watchdog     :11436  上下文限制和故障恢复
+          |
+          v
+Ollama       :11434  执行推理
+```
+
+请参阅 **[Linux/systemd 双代理配置指南](docs/with-watchdog.md)**，了解端口及验证方法。注意：两个代理默认都可能监听 `11437`。一起使用时要将 watchdog 改为 `11436`，并让队列将请求转发给它。
 
 ## 安装
 

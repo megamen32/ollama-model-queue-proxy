@@ -4,6 +4,15 @@
 
 <h1 align="center">Очередь Ollama с привязкой к модели</h1>
 
+<p align="center"><strong>Одна GPU, несколько моделей, меньше дорогих переключений.</strong></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-standard%20library-3776AB?style=flat-square" alt="Python standard library">
+  <img src="https://img.shields.io/badge/License-MIT-64748B?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Linux%20%7C%20macOS%20%7C%20Windows-supported-0F766E?style=flat-square" alt="Linux, macOS and Windows">
+</p>
+
+
 <p align="center">
   <a href="README.md">English</a> ·
   <a href="README.ru.md">Русский</a> ·
@@ -30,6 +39,25 @@
 - `/health` с активной моделью и глубиной очереди;
 - логи `queue_enqueue`, `queue_start`, `queue_switch`, `queue_done`;
 - обратимая нативная настройка сервиса Ollama; данные и бинарники Ollama не изменяются.
+
+## Вместе с Ollama Request Watchdog
+
+**Model Queue** задаёт *порядок* запросов и группирует работу по моделям. **[Ollama Request Watchdog](https://github.com/megamen32/ollama-request-watchdog-proxy)** следит за Ollama, ограничивает контекст генерации и при необходимости восстанавливает службу. Инструменты работают независимо, **LiteLLM не обязателен**.
+
+```text
+Приложение (при желании LiteLLM)
+                |
+                v
+Model Queue   :11437   порядок запросов
+                |
+                v
+Watchdog      :11436   ограничения и восстановление
+                |
+                v
+Ollama        :11434   вычисления
+```
+
+**[Совместная настройка Linux/systemd](docs/with-watchdog.ru.md)**: порты, параметры и проверка. Важно: оба прокси по умолчанию могут использовать `11437`. При совместной работе watchdog переносится на `11436`, а очередь направляется на него.
 
 ## Установка
 
