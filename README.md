@@ -33,6 +33,7 @@ Requests wait in the queue. They are not cancelled just because another model is
 
 - standard-library-only Python implementation;
 - native Ollama and OpenAI-compatible inference paths;
+- supports modern Ollama `POST /api/embed` and legacy `POST /api/embeddings` through the same queue;
 - one upstream inference worker, so one model is loaded at a time when Ollama is configured accordingly;
 - model-affine batching with a small configurable grace period;
 - `/health` endpoint with active model and queue depth;

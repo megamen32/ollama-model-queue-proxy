@@ -57,12 +57,12 @@ class ProxyIntegrationTests(unittest.TestCase):
         results: list[int] = []
         results_lock = threading.Lock()
 
-        def request(model: str) -> None:
+        def request(model: str, path: str = "/api/generate") -> None:
             connection = http.client.HTTPConnection(*proxy.server_address, timeout=3)
             body = json.dumps({"model": model, "prompt": "integration"}).encode("utf-8")
             connection.request(
                 "POST",
-                "/api/generate",
+                path,
                 body=body,
                 headers={"Content-Type": "application/json"},
             )
@@ -76,7 +76,7 @@ class ProxyIntegrationTests(unittest.TestCase):
         first_thread.start()
         self.assertTrue(FakeOllamaHandler.first_started.wait(timeout=1.0))
         second_thread = threading.Thread(target=request, args=("gemma",))
-        same_model_thread = threading.Thread(target=request, args=("qwen",))
+        same_model_thread = threading.Thread(target=request, args=("qwen", "/api/embed"))
         second_thread.start()
         same_model_thread.start()
         time.sleep(0.05)

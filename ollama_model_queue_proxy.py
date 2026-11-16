@@ -33,6 +33,7 @@ INFERENCE_PATHS = {
     "/api/chat",
     "/api/generate",
     "/api/embeddings",
+    "/api/embed",
     "/v1/chat/completions",
     "/v1/embeddings",
 }
